@@ -66,7 +66,7 @@ const login = async (req, res) => {
 }
 const bookmarks = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");  
+    const user = await User.findById(req.user.id).select("-password").populate("bookmarks");  
     res.status(200).json(user.bookmarks);
   } catch (error) {
     console.error("Fetching bookmarks failed:", error);
