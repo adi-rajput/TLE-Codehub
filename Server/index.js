@@ -5,6 +5,7 @@ const { dbConfig } = require('./config/db_config.js')
 const  fetchCodechef  = require('./controller/fetch_codechef.js')
 const  fetchCodeforces  = require('./controller/fetch_codeforces.js')   
 const  fetchLeetCodeContests  = require('./controller/fetch_leetcode.js')
+const  {updateContestStatus}  = require('./controller/Contest_Controller.js')
 const contestCron = require('./utils/contest_cron.js')
 dotenv.config();
 
@@ -18,11 +19,13 @@ app.use(cors());
 const PORT = process.env.PORT || 3000
 
 app.listen(PORT , () =>{
-    fetchLeetCodeContests();
+    //fetchLeetCodeContests();
     dbConfig();
     console.log(`Server is running in ${PORT}`)
     // fetchCodechef();
     // fetchCodeforces();  
     
-    //contestCron();
+    contestCron();
 })
+
+updateContestStatus();
