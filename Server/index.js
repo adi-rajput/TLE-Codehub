@@ -32,5 +32,5 @@ app.listen(PORT , () =>{
     contestCron();
 })
 app.use('/user', userRouter)
-
+app.use('/contests', contestRouter)
 updateContestStatus();
