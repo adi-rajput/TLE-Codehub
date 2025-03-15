@@ -22,8 +22,8 @@ app.listen(PORT , () =>{
     //fetchLeetCodeContests();
     dbConfig();
     console.log(`Server is running in ${PORT}`)
-    // fetchCodechef();
-    // fetchCodeforces();  
+    //fetchCodechef();
+    //fetchCodeforces();  
     
     contestCron();
 })

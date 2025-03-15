@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const contestSchema = new mongoose.Schema({
   title: { type: String, required: true },
   platform: { type: String, enum: ['Codeforces', 'CodeChef', 'LeetCode'], required: true },
+  contest_link: { type: String, required: true },
   date: { type: Date, required: true }, 
   duration: { type: Number, required: true }, 
   status: { type: String, enum: ['upcoming', 'ongoing', 'past'], required: true },

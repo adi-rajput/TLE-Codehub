@@ -44,6 +44,7 @@ const fetchLeetCodePastContests = async () => {
         date: new Date(c.startTime * 1000),
         duration: 90,
         status: "past",
+        contest_link: `https://leetcode.com/contest/${c.titleSlug}`, 
         solutionLink: null,
       }));
 

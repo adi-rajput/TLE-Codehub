@@ -12,6 +12,7 @@ const fetchCodechef = async (req, res) => {
       platform: "CodeChef",
       date: new Date(contest.contest_start_date_iso),
       duration: parseInt(contest.contest_duration),
+      contest_link: `https://www.codechef.com/${contest.contest_code}`,
       status: "upcoming",
     }));
 
@@ -20,6 +21,7 @@ const fetchCodechef = async (req, res) => {
       platform: "CodeChef",
       date: new Date(contest.contest_start_date_iso),
       duration: parseInt(contest.contest_duration),
+      contest_link: `https://www.codechef.com/${contest.contest_code}`,
       status: "past",
     }));
 

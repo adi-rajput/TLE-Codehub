@@ -22,6 +22,7 @@ const fetchCodeforces = async (req, res) => {
           : c.phase === "CODING"
           ? "ongoing"
           : "past",
+      contest_link: `https://codeforces.com/contest/${c.id}`,
       solutionLink: null,
     }));
 

@@ -38,8 +38,24 @@ const updateContestStatus = async () => {
   }
 };
 
+const getActiveContests = async (req, res) => {
+  try {
+    const activeContests = await Contest.find({
+      status: { $in: ["upcoming", "ongoing"] },
+    }).sort({ date: 1 }); 
+
+    res.status(200).json({ success: true, data: activeContests });
+  } catch (error) {
+    console.error("Error fetching active contests:", error.message);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+
+
 setInterval(updateContestStatus, 60 * 1000);
 module.exports = {
     fetchContests,
     updateContestStatus,
+    getActiveContests
 };
