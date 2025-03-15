@@ -1,8 +1,8 @@
 const User = require("../models/user_models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { SECRET_KEY } = require("../config/config");
-
+const dotenv = require("dotenv");
+dotenv.config();
 const register = async (req, res) => {
   try {
     const { name, email, password , role } = req.body;
@@ -50,17 +50,13 @@ const login = async (req, res) => {
             message: "Invalid credentials",
         });
         }   
-    const payload = {
-        user: {
-            id: user.id,
-        },
-    };  
-    jwt.sign(payload, SECRET_KEY, { expiresIn: 3600 }, (error, token) => {
-        if (error) throw error;
-        res.status(200).json({
-            token,
+        const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY, { expiresIn: '7d' });
+
+        res.cookie('token', token, {
+          httpOnly: true,
         });
-    });
+    
+        res.status(200).json({ message: 'Login successful' });
     } catch (error) {
     console.error("User login failed:", error);
     res.status(500).json({
@@ -68,4 +64,15 @@ const login = async (req, res) => {
     });
     }
 }
-module.exports = { register, login };
+const bookmarks = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");  
+    res.status(200).json(user.bookmarks);
+  } catch (error) {
+    console.error("Fetching bookmarks failed:", error);
+    res.status(500).json({
+      message: "Fetching bookmarks failed",
+    });
+  }
+};
+module.exports = { register, login , bookmarks };
