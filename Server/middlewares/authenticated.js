@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const dotenv  =     require('dotenv');
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
 dotenv.config();
 
 const authenticateUser = (req, res, next) => {
@@ -10,11 +10,17 @@ const authenticateUser = (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    req.user = { id: decoded.userId };
+    //console.log("Decoded Token:", decoded);  
+
+    req.user = { id: decoded.userId, role: decoded.role };
+
+    //console.log("User info in req.user:", req.user);  
+
     next();
   } catch (error) {
     return res.status(401).json({ message: 'Unauthorized: Invalid token' });
   }
 };
+
 
 module.exports = authenticateUser;

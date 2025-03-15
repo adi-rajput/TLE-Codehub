@@ -51,11 +51,52 @@ const getActiveContests = async (req, res) => {
   }
 };
 
+const LeetCodeContest = async (req, res) => {
+  try {
+    const leetcodeContests = await Contest.find({
+      platform: "LeetCode",
+    }).sort({ date: 1 });
+
+    res.status(200).json({ success: true, data: leetcodeContests });
+  } catch (error) {
+    console.error("Error fetching LeetCode contests:", error.message);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+const CodeforcesContest = async (req, res) => {
+  try {
+    const codeforcesContests = await Contest.find({
+      platform: "Codeforces",
+    }).sort({ date: 1 });
+
+    res.status(200).json({ success: true, data: codeforcesContests });
+  } catch (error) {
+    console.error("Error fetching Codeforces contests:", error.message);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+}
+
+const CodechefContest = async (req, res) => {
+  try {
+    const codechefContests = await Contest.find({
+      platform: "Codechef",
+    }).sort({ date: 1 });
+
+    res.status(200).json({ success: true, data: codechefContests });
+  } catch (error) {
+    console.error("Error fetching Codechef contests:", error.message);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+} 
 
 
 setInterval(updateContestStatus, 60 * 1000);
 module.exports = {
     fetchContests,
     updateContestStatus,
-    getActiveContests
+    getActiveContests,
+    LeetCodeContest,
+    CodeforcesContest,
+    CodechefContest,
 };
