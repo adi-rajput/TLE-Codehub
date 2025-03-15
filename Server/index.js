@@ -18,11 +18,11 @@ app.use(cors());
 const PORT = process.env.PORT || 3000
 
 app.listen(PORT , () =>{
-    //fetchLeetCodeContests();
+    fetchLeetCodeContests();
     dbConfig();
     console.log(`Server is running in ${PORT}`)
     // fetchCodechef();
     // fetchCodeforces();  
     
-    contestCron();
+    //contestCron();
 })
