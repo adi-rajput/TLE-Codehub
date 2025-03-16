@@ -120,6 +120,27 @@ const CodechefContest = async (req, res) => {
   }
 };
 
+const getPastContests = async (req, res) => {
+  try {
+    const pastContests = await Contest.find({
+      status: "past",
+    })
+      .sort({ end_time: -1 })
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      message: "Past contests fetched successfully",
+      data: pastContests,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch past contests",
+      error: error.message,
+    });
+  }
+};
 
 
 setInterval(updateContestStatus, 60 * 1000);
@@ -130,4 +151,5 @@ module.exports = {
     LeetCodeContest,
     CodeforcesContest,
     CodechefContest,
+    getPastContests,
 };

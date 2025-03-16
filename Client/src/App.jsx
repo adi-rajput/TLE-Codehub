@@ -2,7 +2,7 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Navbar from "./Components/navbar";
 import ContestTracker from "./Components/active-contests";
-// import PastContests from "./Components/PastContests";
+import PastContests from "./Components/PastContests";
 // import Bookmarks from "./Components/Bookmarks";
 import Register from "./Components/Register";
 
@@ -23,7 +23,7 @@ const App = () => {
       <Navbar user={user} />
       <Routes>
         <Route path="/" element={<ContestTracker />} />
-        
+        <Route path="/past-contests" element={<PastContests />} />
       </Routes>
     </>
   );
