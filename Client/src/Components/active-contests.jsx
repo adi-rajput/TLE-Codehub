@@ -5,7 +5,9 @@ const ContestTracker = () => {
   const [filteredContests, setFilteredContests] = useState([]);
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [bookmarked, setBookmarked] = useState([]);
 
+  // Fetch contests
   const fetchContests = async () => {
     try {
       setLoading(true);
@@ -25,10 +27,24 @@ const ContestTracker = () => {
     }
   };
 
+  // Fetch bookmarks from API
+  const fetchBookmarks = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/user/bookmarks");
+      const data = await response.json();
+      // Store the array of bookmark IDs instead of objects for easier checking
+      setBookmarked(data.bookmarks?.map(bookmark => bookmark._id) || []);
+    } catch (error) {
+      console.error("Error fetching bookmarks:", error);
+    }
+  };
+
   useEffect(() => {
     fetchContests();
+    fetchBookmarks();
   }, []);
 
+  // Handle platform filter change
   const handlePlatformChange = (platform) => {
     let updatedPlatforms = [...selectedPlatforms];
 
@@ -47,6 +63,38 @@ const ContestTracker = () => {
     }
   };
 
+  // Handle bookmarking (calls API and updates local state)
+  const toggleBookmark = async (contestId) => {
+    try {
+      const response = await fetch(`http://localhost:3000/user/toggle-bookmark/${contestId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include" // Include cookies if using session-based auth
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        // Update local bookmark state immediately without refetching
+        if (isBookmarked(contestId)) {
+          setBookmarked(bookmarked.filter(id => id !== contestId));
+        } else {
+          setBookmarked([...bookmarked, contestId]);
+        }
+      } else {
+        console.error("Error toggling bookmark:", data.message);
+      }
+    } catch (error) {
+      console.error("Error toggling bookmark:", error);
+    }
+  };
+
+  // Check if a contest is bookmarked using the ID directly
+  const isBookmarked = (contestId) => bookmarked.includes(contestId);
+
+  // Get remaining time
   const getRemainingTime = (startTime, status) => {
     if (status === "ongoing") {
       return <span className="text-lg font-semibold text-orange-500">Ongoing</span>;
@@ -100,11 +148,12 @@ const ContestTracker = () => {
         ))}
       </div>
 
+      {/* Active Contests Section */}
       {loading ? (
         <p className="text-lg text-center text-gray-600">Loading contests...</p>
       ) : (
         <div className="max-w-[95%] mx-auto overflow-hidden bg-white rounded-lg shadow-md">
-          <div className="grid grid-cols-[50px_3fr_1.2fr_.9fr_1.2fr_1.15fr_87px] gap-3 px-8 py-5 text-lg font-semibold text-white bg-gray-700">
+          <div className="grid grid-cols-[50px_3fr_1.2fr_.9fr_1.2fr_1.15fr_87px_87px] gap-3 px-8 py-5 text-lg font-semibold text-white bg-gray-700">
             <span>#</span>
             <span>Contest</span>
             <span>Platform</span>
@@ -112,13 +161,14 @@ const ContestTracker = () => {
             <span>Time Left</span>
             <span>Duration</span>
             <span>Action</span>
+            <span>Bookmark</span>
           </div>
 
           {filteredContests.length > 0 ? (
             filteredContests.map((contest, index) => (
               <div
                 key={index}
-                className="grid items-center grid-cols-[50px_3fr_1.2fr_1fr_1.2fr_1fr_110px] gap-3 px-8 py-5 border-b border-gray-300 rounded-lg transition-all shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-[2px]"
+                className="grid items-center grid-cols-[50px_3fr_1.2fr_1fr_1.2fr_1fr_110px_90px] gap-3 px-8 py-5 border-b border-gray-300 rounded-lg transition-all shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-[2px]"
               >
                 <span className="w-8 text-xl font-medium text-center text-gray-700">
                   {index + 1}
@@ -169,12 +219,22 @@ const ContestTracker = () => {
                 >
                   Visit
                 </a>
+
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent row click event
+                    toggleBookmark(contest._id);
+                  }}
+                  className={`p-2 text-2xl rounded-md ${
+                    isBookmarked(contest._id) ? "text-yellow-500" : "text-gray-400"
+                  } hover:scale-110 transition-transform`}
+                >
+                  ★
+                </button>
               </div>
             ))
           ) : (
-            <p className="p-6 text-lg text-center text-gray-600">
-              No upcoming or ongoing contests.
-            </p>
+            <p className="p-6 text-lg text-center text-gray-600">No upcoming or ongoing contests.</p>
           )}
         </div>
       )}
