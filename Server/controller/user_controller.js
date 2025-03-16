@@ -81,17 +81,45 @@ const login = async (req, res) => {
 //   }
 // };
 
-const bookmarks = async (req, res) => {
+const toggleBookmark = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id)
-      .select("-password")
-      .populate("bookmarks");
-    res.status(200).json(user.bookmarks);
+    const { contestId } = req.params;
+    const userId = req.user._id;
+
+    const user = await User.findById(userId).populate("bookmarks");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const contestIdStr = String(contestId); // Ensure string comparison
+
+    // Find if the contest is already bookmarked
+    const index = user.bookmarks.findIndex(contest => String(contest._id) === contestIdStr);
+
+    if (index === -1) {
+      user.bookmarks.push(contestIdStr);
+    } else {
+      user.bookmarks.splice(index, 1);
+    }
+
+    await user.save();
+
+    // Re-populate bookmarks after modification
+    const updatedUser = await User.findById(userId).populate("bookmarks");
+
+    res.json({ bookmarks: updatedUser.bookmarks });
   } catch (error) {
-    console.error("Fetching bookmarks failed:", error);
-    res.status(500).json({
-      message: "Fetching bookmarks failed",
-    });
+    console.error("Bookmark Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+const getBookmarks = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate("bookmarks");
+    res.json({ bookmarks: user.bookmarks });
+  } catch (error) {
+    console.error("Get Bookmarks Error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -139,4 +167,4 @@ const addSolutionLink = async (req, res) => {
 };
 
 
-module.exports = { register, login, bookmarks , addSolutionLink };
+module.exports = { register, login, toggleBookmark, getBookmarks , addSolutionLink };

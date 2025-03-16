@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const User = require('../models/user_models')
-const {register, login , bookmarks , addSolutionLink} = require('../controller/user_controller')
+const {register, login , toggleBookmark, getBookmarks , addSolutionLink} = require('../controller/user_controller')
 const {authenticateUser} = require('../middlewares/authenticated')
 const authorizeAdmin = require('../middlewares/authorize_user')
 const jwt = require('jsonwebtoken')
@@ -10,7 +10,8 @@ dotenv.config()
 
 router.post('/register', register)
 router.post('/login', login)
-router.get('/bookmarks', authenticateUser, bookmarks)
+router.put('/toggle-bookmark/:contestId', authenticateUser, toggleBookmark)
+router.get('/bookmarks', authenticateUser, getBookmarks)
 router.put('/add-solution-link/:contestId', authenticateUser , addSolutionLink)
 
 const verifyToken = (req, res, next) => {

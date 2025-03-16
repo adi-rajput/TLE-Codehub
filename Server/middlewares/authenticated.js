@@ -1,40 +1,29 @@
 const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv");
-dotenv.config();
+const User = require("../models/user_models");
 
-const authenticateUser = (req, res, next) => {
+const authenticateUser = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
+    //console.log("Cookies:", req.cookies); // Debugging
+    const token = req.cookies?.token;
+    
     if (!token) {
-      return res.status(401).json({ message: 'Unauthorized: No token provided' });
+      return res.status(401).json({ message: "Unauthorized, no token found" });
     }
 
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    //console.log("Decoded Token:", decoded);  
+    //console.log("Decoded User:", decoded); // Debugging
 
-    req.user = { id: decoded.userId, role: decoded.role };
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    //console.log("User info in req.user:", req.user);  
-
+    req.user = user;
     next();
   } catch (error) {
-    return res.status(401).json({ message: 'Unauthorized: Invalid token' });
-  }
-};
-const verifyToken = async (req, res, next) => {
-  const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
-
-  if (!token) {
-    return res.status(401).json({ message: "Unauthorized, no token provided" });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (error) {
-    res.status(401).json({ message: "Invalid token" });
+    console.error("Token Verification Error:", error);
+    res.status(403).json({ message: "Invalid token" });
   }
 };
 
-module.exports = {authenticateUser, verifyToken};
+module.exports = { authenticateUser };
