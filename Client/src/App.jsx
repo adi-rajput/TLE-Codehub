@@ -5,6 +5,7 @@ import ContestTracker from "./Components/active-contests";
 import PastContests from "./Components/PastContests";
 // import Bookmarks from "./Components/Bookmarks";
 import Register from "./Components/Register";
+import Login from "./Components/login";
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -24,6 +25,14 @@ const App = () => {
       <Routes>
         <Route path="/" element={<ContestTracker />} />
         <Route path="/past-contests" element={<PastContests />} />
+        <Route
+          path="/register"
+          element={<Register onRegister={(data) => setUser(data)} />}
+        />
+        <Route
+          path="/login"
+          element={<Login onLogin={(data) => setUser(data)} />}
+        />
       </Routes>
     </>
   );

@@ -38,40 +38,48 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
 
-    if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: "User not found" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
+    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-    const payload = { userId: user._id.toString(), role: user.role };
-    //console.log("Payload Before Signing:", payload);
-
-    const token = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: "7d" });
-
-    //console.log("Generated Token:", token);
-    //console.log("Decoded Token After Signing:", jwt.decode(token)); 
+    const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY, { expiresIn: "7d" });
 
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      httpOnly: true, 
+      secure: process.env.NODE_ENV === "production", 
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
     });
 
-    res.status(200).json({ message: "Login successful" });
+    res.status(200).json({ message: "Login successful", user: { id: user._id, name: user.name, email: user.email } });
+
   } catch (error) {
-    console.error("User login failed:", error);
-    res.status(500).json({ message: "User login failed" });
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
+// const getUser = async () => {
+//   try {
+//     const response = await fetch("http://localhost:3000/user/me", {
+//       method: "GET",
+//       credentials: "include", 
+//     });
 
+//     if (!response.ok) {
+//       throw new Error("Not authenticated");
+//     }
+
+//     const data = await response.json();
+//     return data.user; // Return the user object
+//   } catch (error) {
+//     console.error("Error fetching user:", error);
+//     return null; // Return null if user is not authenticated
+//   }
+// };
 
 const bookmarks = async (req, res) => {
   try {
@@ -131,4 +139,4 @@ const addSolutionLink = async (req, res) => {
 };
 
 
-module.exports = { register, login, bookmarks , addSolutionLink};
+module.exports = { register, login, bookmarks , addSolutionLink };

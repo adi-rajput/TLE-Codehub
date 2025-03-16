@@ -6,7 +6,6 @@ const ContestTracker = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch contests from API
   const fetchContests = async () => {
     try {
       setLoading(true);
@@ -30,7 +29,6 @@ const ContestTracker = () => {
     fetchContests();
   }, []);
 
-  // Handle Platform Filtering
   const handlePlatformChange = (platform) => {
     let updatedPlatforms = [...selectedPlatforms];
 
@@ -42,7 +40,6 @@ const ContestTracker = () => {
 
     setSelectedPlatforms(updatedPlatforms);
 
-    // Apply Filtering
     if (updatedPlatforms.length === 0) {
       setFilteredContests(contests);
     } else {
@@ -50,7 +47,6 @@ const ContestTracker = () => {
     }
   };
 
-  // Get Remaining Time Display
   const getRemainingTime = (startTime, status) => {
     if (status === "ongoing") {
       return <span className="text-lg font-semibold text-orange-500">Ongoing</span>;
@@ -76,7 +72,6 @@ const ContestTracker = () => {
 
   return (
     <div className="flex flex-col items-center min-h-screen p-6 text-gray-800 bg-gray-100">
-      {/* Header & Refresh Button */}
       <div className="flex flex-col items-center w-full mb-6">
         <h1 className="mb-4 text-4xl font-bold text-black">Contest Tracker</h1>
         <button
@@ -87,7 +82,6 @@ const ContestTracker = () => {
         </button>
       </div>
 
-      {/* Filter Options (Centered) */}
       <div className="flex justify-center gap-6 mb-6">
         {["LeetCode", "Codeforces", "CodeChef"].map((platform) => (
           <label
@@ -106,7 +100,6 @@ const ContestTracker = () => {
         ))}
       </div>
 
-      {/* Contest Table */}
       {loading ? (
         <p className="text-lg text-center text-gray-600">Loading contests...</p>
       ) : (
