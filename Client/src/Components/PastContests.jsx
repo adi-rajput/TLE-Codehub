@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 const PastContests = () => {
   const [contests, setContests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [bookmarked, setBookmarked] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const contestsPerPage = 50;
 
@@ -11,12 +12,22 @@ const PastContests = () => {
   const [selectedPlatform, setSelectedPlatform] = useState("All");
   const [selectedDuration, setSelectedDuration] = useState("All");
 
+  // Fetch both contests and bookmarks at component mount
   useEffect(() => {
-    const fetchContests = async () => {
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
+        // Fetch bookmarks first
+        const bookmarkResponse = await fetch("http://localhost:3000/user/bookmarks");
+        const bookmarkData = await bookmarkResponse.json();
+        
+        if (bookmarkResponse.ok && bookmarkData.bookmarks) {
+          // Store just the IDs of bookmarked contests
+          const bookmarkIds = bookmarkData.bookmarks.map(bookmark => bookmark._id);
+          setBookmarked(bookmarkIds);
+        }
 
-        // Fetch all past contests from APIs
+        // Then fetch contests from all platforms
         const [leetcodeRes, codeforcesRes, codechefRes] = await Promise.all([
           fetch("http://localhost:3000/contests/leetcode-contests"),
           fetch("http://localhost:3000/contests/codeforces-contests"),
@@ -48,14 +59,44 @@ const PastContests = () => {
 
         setContests(pastContests);
       } catch (error) {
-        console.error("Error fetching contests:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchContests();
+    fetchData();
   }, []);
+
+  // Check if a contest is bookmarked
+  const isBookmarked = (contestId) => bookmarked.includes(contestId);
+
+  // Handle bookmarking (calls API and updates local state)
+  const toggleBookmark = async (contestId) => {
+    try {
+      const response = await fetch(`http://localhost:3000/user/toggle-bookmark/${contestId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include" // Include cookies if using session-based auth
+      });
+      
+      if (response.ok) {
+        // Update local bookmark state immediately without refetching
+        if (isBookmarked(contestId)) {
+          setBookmarked(bookmarked.filter(id => id !== contestId));
+        } else {
+          setBookmarked([...bookmarked, contestId]);
+        }
+      } else {
+        const data = await response.json();
+        console.error("Error toggling bookmark:", data.message);
+      }
+    } catch (error) {
+      console.error("Error toggling bookmark:", error);
+    }
+  };
 
   // Apply Filters
   const filteredContests = contests.filter((contest) => {
@@ -122,18 +163,19 @@ const PastContests = () => {
       </div>
 
       {loading ? (
-        <p className="text-lg text-center text-gray-600">Loading contests...</p>
+        <p className="text-lg text-center text-gray-600">Loading contests and bookmarks...</p>
       ) : (
         <div className="max-w-[95%] mx-auto overflow-hidden bg-white rounded-lg shadow-md">
           {/* Table Header */}
-          <div className="grid grid-cols-[50px_2.5fr_1fr_1.3fr_1fr_130px_100px] gap-3 px-8 py-5 text-lg font-semibold text-white bg-gray-700">
+          <div className="grid grid-cols-[50px_2.5fr_1fr_1.3fr_1fr_100px_100px_80px] gap-3 px-8 py-5 text-lg font-semibold text-white bg-gray-700">
             <span>#</span>
             <span>Contest</span>
             <span>Platform</span>
             <span>Start Time</span>
             <span>Duration</span>
             <span>Action</span>
-            <span >Solution</span>
+            <span>Solution</span>
+            <span>Bookmark</span>
           </div>
 
           {/* Past Contests List */}
@@ -141,7 +183,7 @@ const PastContests = () => {
             currentContests.map((contest, index) => (
               <div
                 key={index}
-                className="grid items-center grid-cols-[50px_2.5fr_1fr_1.5fr_0.8fr_130px_140px] gap-3 px-8 py-5 border-b border-gray-300 rounded-lg transition-all shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-[2px]"
+                className="grid items-center grid-cols-[50px_2.5fr_1fr_1.3fr_1fr_100px_100px_80px] gap-3 px-8 py-5 border-b border-gray-300 rounded-lg transition-all shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-[2px]"
               >
                 {/* Index */}
                 <span className="w-8 text-xl font-medium text-center text-gray-700">
@@ -192,6 +234,8 @@ const PastContests = () => {
                 >
                   Visit
                 </a>
+                
+                {/* Solution Button */}
                 {contest.solutionLink ? (
                   <a
                     href={contest.solutionLink}
@@ -204,6 +248,20 @@ const PastContests = () => {
                 ) : (
                   <span className="text-center text-gray-500">N/A</span>
                 )}
+                
+                {/* Bookmark Button with yellow fill for bookmarked contests */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent row click event
+                    toggleBookmark(contest._id);
+                  }}
+                  className={`p-2 text-2xl rounded-md ${
+                    isBookmarked(contest._id) ? "text-yellow-500" : "text-gray-400"
+                  } hover:scale-110 transition-transform`}
+                  aria-label={isBookmarked(contest._id) ? "Remove bookmark" : "Add bookmark"}
+                >
+                  ★
+                </button>
               </div>
             ))
           ) : (
