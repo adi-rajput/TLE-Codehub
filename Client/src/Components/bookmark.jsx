@@ -222,7 +222,7 @@ const BookmarkedContests = () => {
                     <span className="text-center text-gray-500">N/A</span>
                   )}
 
-                  <button onClick={() => toggleBookmark(contest._id)}>★</button>
+                  <button onClick={() => toggleBookmark(contest._id)} className="p-2 text-2xl text-yellow-400 rounded-md cursor-pointer">★</button>
                 </div>
               );
             })

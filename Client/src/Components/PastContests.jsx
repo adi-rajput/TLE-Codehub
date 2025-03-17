@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 import AddSolutionButton from "./AddSolution";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+//toast.configure();
+
 const PastContests = () => {
   const [contests, setContests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -107,8 +111,10 @@ const PastContests = () => {
       if (response.ok) {
         if (isBookmarked(contestId)) {
           setBookmarked(bookmarked.filter((id) => id !== contestId));
+          toast.success("Bookmark removed successfully!");
         } else {
           setBookmarked([...bookmarked, contestId]);
+          toast.success("Bookmark added successfully!");
         }
       } else {
         const data = await response.json();
@@ -268,7 +274,7 @@ const PastContests = () => {
                     isBookmarked(contest._id)
                       ? "text-yellow-500"
                       : "text-gray-400"
-                  } hover:scale-110 transition-transform`}
+                  } hover:scale-110 transition-transform cursor-pointer`}
                   aria-label={
                     isBookmarked(contest._id)
                       ? "Remove bookmark"
@@ -297,8 +303,11 @@ const PastContests = () => {
         </button>
 
         <span className="text-lg font-semibold">
-          Page {currentPage} of{" "}
-          {Math.ceil(filteredContests.length / contestsPerPage)}
+          {filteredContests.length === 0
+            ? "Loading..." 
+            : `Page ${currentPage} of ${Math.ceil(
+                filteredContests.length / contestsPerPage
+              )}`}
         </span>
 
         <button

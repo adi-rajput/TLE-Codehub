@@ -27,8 +27,8 @@ const fetchLeetCodeContests = async () => {
     const upcomingResponse = await axios.post("https://leetcode.com/graphql/", upcomingQuery, {
       headers: {
         "Content-Type": "application/json",
-        "Referer": "https://leetcode.com/contest/", // Required for LeetCode API
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", // Simulate browser request
+        "Referer": "https://leetcode.com/contest/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
       },
     });
 

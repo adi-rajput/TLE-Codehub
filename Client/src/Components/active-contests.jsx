@@ -7,7 +7,6 @@ const ContestTracker = () => {
   const [loading, setLoading] = useState(true);
   const [bookmarked, setBookmarked] = useState([]);
 
-  // Fetch contests
   const fetchContests = async () => {
     try {
       setLoading(true);
@@ -246,14 +245,14 @@ const ContestTracker = () => {
                   }}
                   className={`p-2 text-2xl rounded-md ${
                     isBookmarked(contest._id) ? "text-yellow-500" : "text-gray-400"
-                  } hover:scale-110 transition-transform`}
+                  } hover:scale-110 transition-transform cursor-pointer`}
                 >
                   ★
                 </button>
               </div>
             ))
           ) : (
-            <p className="p-6 text-lg text-center text-gray-600">No upcoming or ongoing contests.</p>
+            <p className="p-6 text-lg text-center text-gray-600 ">No upcoming or ongoing contests.</p>
           )}
         </div>
       )}

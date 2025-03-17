@@ -62,25 +62,6 @@ const login = async (req, res) => {
   }
 };
 
-// const getUser = async () => {
-//   try {
-//     const response = await fetch("http://localhost:3000/user/me", {
-//       method: "GET",
-//       credentials: "include", 
-//     });
-
-//     if (!response.ok) {
-//       throw new Error("Not authenticated");
-//     }
-
-//     const data = await response.json();
-//     return data.user; // Return the user object
-//   } catch (error) {
-//     console.error("Error fetching user:", error);
-//     return null; // Return null if user is not authenticated
-//   }
-// };
-
 const toggleBookmark = async (req, res) => {
   try {
     const { contestId } = req.params;
@@ -89,9 +70,8 @@ const toggleBookmark = async (req, res) => {
     const user = await User.findById(userId).populate("bookmarks");
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const contestIdStr = String(contestId); // Ensure string comparison
+    const contestIdStr = String(contestId);
 
-    // Find if the contest is already bookmarked
     const index = user.bookmarks.findIndex(contest => String(contest._id) === contestIdStr);
 
     if (index === -1) {
@@ -102,7 +82,6 @@ const toggleBookmark = async (req, res) => {
 
     await user.save();
 
-    // Re-populate bookmarks after modification
     const updatedUser = await User.findById(userId).populate("bookmarks");
 
     res.json({ bookmarks: updatedUser.bookmarks });
@@ -111,7 +90,6 @@ const toggleBookmark = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 
 const getBookmarks = async (req, res) => {
   try {
@@ -165,6 +143,5 @@ const addSolutionLink = async (req, res) => {
     });
   }
 };
-
 
 module.exports = { register, login, toggleBookmark, getBookmarks , addSolutionLink };

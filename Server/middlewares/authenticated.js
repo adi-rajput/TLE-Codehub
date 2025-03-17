@@ -3,7 +3,6 @@ const User = require("../models/user_models");
 
 const authenticateUser = async (req, res, next) => {
   try {
-    //console.log("Cookies:", req.cookies); // Debugging
     const token = req.cookies?.token;
     
     if (!token) {
@@ -11,7 +10,6 @@ const authenticateUser = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    //console.log("Decoded User:", decoded); // Debugging
 
     const user = await User.findById(decoded.id).select("-password");
     if (!user) {

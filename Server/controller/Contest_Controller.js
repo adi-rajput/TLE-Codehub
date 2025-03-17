@@ -16,8 +16,6 @@ const fetchContests = async (req, res) => {
 const updateContestStatus = async () => {
   try {
     const currentTime = new Date();
-    console.log("Updating contest statuses...");
-    // Fetch only contests that need status updates (upcoming or ongoing)
     const contests = await Contest.find({
       status: { $in: ["upcoming", "ongoing"] },
     });
@@ -26,9 +24,9 @@ const updateContestStatus = async () => {
       const contestStart = new Date(contest.date);
       const contestEnd = new Date(
         contestStart.getTime() + contest.duration * 60000
-      ); // Convert duration to milliseconds
+      );
 
-      let newStatus = contest.status; // Default to the existing status
+      let newStatus = contest.status;
 
       if (contest.status === "upcoming" && currentTime >= contestStart) {
         newStatus = "ongoing";
@@ -108,8 +106,6 @@ const CodeforcesContest = async (req, res) => {
 
 const CodechefContest = async (req, res) => {
   try {
-    //console.log("Fetching Codechef Contests...");
-
     const upcomingContests = await Contest.find({
       platform: "CodeChef",
       status: "upcoming",
@@ -152,7 +148,7 @@ const getPastContests = async (req, res) => {
   }
 };
 
-setInterval(updateContestStatus, 60 * 1000 ); // Update contest status every minute
+setInterval(updateContestStatus, 60 * 5000);
 module.exports = {
   fetchContests,
   updateContestStatus,
