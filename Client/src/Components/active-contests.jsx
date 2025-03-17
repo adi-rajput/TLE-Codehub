@@ -7,6 +7,7 @@ const ContestTracker = () => {
   const [loading, setLoading] = useState(true);
   const [bookmarked, setBookmarked] = useState([]);
 
+  // Fetch contests
   const fetchContests = async () => {
     try {
       setLoading(true);
@@ -26,11 +27,12 @@ const ContestTracker = () => {
     }
   };
 
+  // Fetch bookmarks from API
   const fetchBookmarks = async () => {
     try {
         const response = await fetch("http://localhost:3000/user/bookmarks", {
             method: "GET",
-            credentials: "include",
+            credentials: "include", // Ensure cookies are sent with the request
             headers: {
                 "Content-Type": "application/json",
             },
@@ -53,13 +55,15 @@ const ContestTracker = () => {
         console.error("Error fetching bookmarks:", error);
         setBookmarked([]);
     }
-  };
+};
+
 
   useEffect(() => {
     fetchContests();
     fetchBookmarks();
   }, []);
 
+  // Handle platform filter change
   const handlePlatformChange = (platform) => {
     let updatedPlatforms = [...selectedPlatforms];
 
@@ -78,6 +82,7 @@ const ContestTracker = () => {
     }
   };
 
+  // Handle bookmarking (calls API and updates local state)
   const toggleBookmark = async (contestId) => {
     try {
       const response = await fetch(`http://localhost:3000/user/toggle-bookmark/${contestId}`, {
@@ -85,12 +90,13 @@ const ContestTracker = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include"
+        credentials: "include" // Include cookies if using session-based auth
       });
       
       const data = await response.json();
       
       if (response.ok) {
+        // Update local bookmark state immediately without refetching
         if (isBookmarked(contestId)) {
           setBookmarked(bookmarked.filter(id => id !== contestId));
         } else {
@@ -104,8 +110,10 @@ const ContestTracker = () => {
     }
   };
 
+  // Check if a contest is bookmarked using the ID directly
   const isBookmarked = (contestId) => bookmarked.includes(contestId);
 
+  // Get remaining time
   const getRemainingTime = (startTime, status) => {
     if (status === "ongoing") {
       return <span className="text-lg font-semibold text-orange-500">Ongoing</span>;
@@ -159,6 +167,7 @@ const ContestTracker = () => {
         ))}
       </div>
 
+      {/* Active Contests Section */}
       {loading ? (
         <p className="text-lg text-center text-gray-600">Loading contests...</p>
       ) : (
@@ -232,7 +241,7 @@ const ContestTracker = () => {
 
                 <button
                   onClick={(e) => {
-                    e.stopPropagation();
+                    e.stopPropagation(); // Prevent row click event
                     toggleBookmark(contest._id);
                   }}
                   className={`p-2 text-2xl rounded-md ${
@@ -252,4 +261,4 @@ const ContestTracker = () => {
   );
 };
 
-export default ContestTracker;
+export default ContestTracker;  
