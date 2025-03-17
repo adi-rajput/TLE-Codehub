@@ -15,26 +15,38 @@ const fetchContests = async (req, res) => {
 
 const updateContestStatus = async () => {
   try {
-    const now = new Date();
+    const currentTime = new Date();
+    console.log("Updating contest statuses...");
+    // Fetch only contests that need status updates (upcoming or ongoing)
+    const contests = await Contest.find({
+      status: { $in: ["upcoming", "ongoing"] },
+    });
 
-    await Contest.updateMany(
-      { status: "upcoming", date: { $lte: now } },
-      { $set: { status: "ongoing" } }
-    );
+    for (const contest of contests) {
+      const contestStart = new Date(contest.date);
+      const contestEnd = new Date(
+        contestStart.getTime() + contest.duration * 60000
+      ); // Convert duration to milliseconds
 
-    await Contest.updateMany(
-      { status: "ongoing" },
-      { $set: { status: "past" } },
-      {
-        arrayFilters: [
-          { "contest.date": { $lte: new Date(now - 90 * 60 * 1000) } },
-        ],
-      } 
-    );
+      let newStatus = contest.status; // Default to the existing status
 
-    console.log("Contest statuses updated successfully.");
+      if (contest.status === "upcoming" && currentTime >= contestStart) {
+        newStatus = "ongoing";
+      }
+      if (contest.status === "ongoing" && currentTime >= contestEnd) {
+        newStatus = "past";
+      }
+
+      if (newStatus !== contest.status) {
+        await Contest.updateOne(
+          { _id: contest._id },
+          { $set: { status: newStatus } }
+        );
+        console.log(`Updated ${contest.title} to ${newStatus}`);
+      }
+    }
   } catch (error) {
-    console.error("Error updating contest status:", error.message);
+    console.error("Error updating contest statuses:", error);
   }
 };
 
@@ -42,7 +54,7 @@ const getActiveContests = async (req, res) => {
   try {
     const activeContests = await Contest.find({
       status: { $in: ["upcoming", "ongoing"] },
-    }).sort({ date: 1 }); 
+    }).sort({ date: 1 });
 
     res.status(200).json({ success: true, data: activeContests });
   } catch (error) {
@@ -56,15 +68,15 @@ const LeetCodeContest = async (req, res) => {
     const upcomingContests = await Contest.find({
       platform: "LeetCode",
       status: "upcoming",
-    }).sort({ date: 1 }); 
+    }).sort({ date: 1 });
 
     const pastContests = await Contest.find({
       platform: "LeetCode",
       status: "past",
-    }).sort({ date: -1 }); 
+    }).sort({ date: -1 });
     res.status(200).json({
       success: true,
-      data: [...upcomingContests, ...pastContests], 
+      data: [...upcomingContests, ...pastContests],
     });
   } catch (error) {
     console.error("Error fetching LeetCode contests:", error.message);
@@ -96,7 +108,7 @@ const CodeforcesContest = async (req, res) => {
 
 const CodechefContest = async (req, res) => {
   try {
-    console.log("Fetching Codechef Contests...");
+    //console.log("Fetching Codechef Contests...");
 
     const upcomingContests = await Contest.find({
       platform: "CodeChef",
@@ -107,8 +119,6 @@ const CodechefContest = async (req, res) => {
       platform: "CodeChef",
       status: "past",
     }).sort({ date: -1 });
-
-    
 
     res.status(200).json({
       success: true,
@@ -142,14 +152,13 @@ const getPastContests = async (req, res) => {
   }
 };
 
-
-setInterval(updateContestStatus, 60 * 5000);
+setInterval(updateContestStatus, 60 * 1000 ); // Update contest status every minute
 module.exports = {
-    fetchContests,
-    updateContestStatus,
-    getActiveContests,
-    LeetCodeContest,
-    CodeforcesContest,
-    CodechefContest,
-    getPastContests,
+  fetchContests,
+  updateContestStatus,
+  getActiveContests,
+  LeetCodeContest,
+  CodeforcesContest,
+  CodechefContest,
+  getPastContests,
 };

@@ -15,19 +15,19 @@ router.get('/bookmarks', authenticateUser, getBookmarks)
 router.put('/add-solution-link/:contestId', authenticateUser , addSolutionLink)
 
 const verifyToken = (req, res, next) => {
-  console.log("Cookies:", req.cookies); // Debugging: Check received cookies
+  //console.log("Cookies:", req.cookies); // Debugging: Check received cookies
 
   const token = req.cookies?.token; // Ensure token exists in cookies
   if (!token) {
-    console.log("❌ No token found in cookies");
+    //console.log("❌ No token found in cookies");
     return res.status(401).json({ message: "Unauthorized" });
   }
 
   try {
-    console.log("🔹 Token Received:", token); // Log received token
+    //console.log("🔹 Token Received:", token); // Log received token
 
     const decoded = jwt.verify(token, process.env.SECRET_KEY); // Verify token
-    console.log("✅ Decoded Token:", decoded); // Log decoded token
+    //console.log("✅ Decoded Token:", decoded); // Log decoded token
 
     req.user = decoded;
     next();

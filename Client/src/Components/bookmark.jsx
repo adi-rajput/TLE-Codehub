@@ -134,7 +134,7 @@ const BookmarkedContests = () => {
       ) : (
         <div className="max-w-[95%] mx-auto overflow-hidden bg-white rounded-lg shadow-md">
           {/* Table Header */}
-          <div className="grid grid-cols-[50px_2.5fr_1fr_1.3fr_1fr_120px_100px_80px] gap-3 px-8 py-5 text-lg font-semibold text-white bg-gray-700">
+          <div className="grid grid-cols-[50px_2.5fr_0.9fr_1fr_1fr_120px_80px_100px_80px] gap-3 px-8 py-5 text-lg font-semibold text-white bg-gray-700">
             <span>#</span>
             <span>Contest</span>
             <span>Platform</span>
@@ -142,7 +142,9 @@ const BookmarkedContests = () => {
             <span>Duration</span>
             <span>Status</span>
             <span>Action</span>
+            <span>Solution</span>
             <span>Bookmark</span>
+            
           </div>
 
           {/* Bookmarked Contests List */}
@@ -162,7 +164,7 @@ const BookmarkedContests = () => {
               return (
                 <div
                   key={index}
-                  className="grid items-center grid-cols-[50px_2.5fr_1fr_1.3fr_1fr_120px_100px_80px] gap-3 px-8 py-5 border-b border-gray-300 rounded-lg transition-all shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-[2px]"
+                  className="grid items-center grid-cols-[50px_2.5fr_1fr_1.2fr_1.1fr_120px_100px_100px_80px] gap-3 px-8 py-5 border-b border-gray-300 rounded-lg transition-all shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-[2px]"
                 >
                   {/* Index */}
                   <span className="w-8 text-xl font-medium text-center text-gray-700">
@@ -179,8 +181,19 @@ const BookmarkedContests = () => {
                     {contest.title}
                   </a>
 
-                  {/* Platform */}
-                  <span className="text-lg text-gray-600">{contest.platform}</span>
+                  <span
+                    className={`w-28 py-1 text-lg font-medium rounded-md text-black text-center ${
+                      contest.platform === "LeetCode"
+                        ? "bg-yellow-300"
+                        : contest.platform === "Codeforces"
+                        ? "bg-purple-300"
+                        : contest.platform === "CodeChef"
+                        ? "bg-orange-300"
+                        : "bg-gray-400"
+                    }`}
+                  >
+                    {contest.platform}
+                  </span>
 
                   {/* Start Time */}
                   <span className="text-lg text-gray-600">
@@ -194,12 +207,12 @@ const BookmarkedContests = () => {
 
                   {/* Status */}
                   <span
-                    className={`px-3 py-1 text-lg font-medium rounded-md ${
+                    className={`px-3 py-1 text-lg font-medium rounded-md text-center ${
                       status === "Upcoming"
-                        ? "bg-blue-200"
+                        ? "bg-green-200 text-green-800"
                         : status === "Ongoing"
-                        ? "bg-green-200"
-                        : "bg-gray-200"
+                        ? "bg-blue-200 text-blue-800"
+                        : "bg-red-200 text-red-800"
                     }`}
                   >
                     {status}
@@ -210,10 +223,23 @@ const BookmarkedContests = () => {
                     href={contest.contest_link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="py-1.5 text-lg font-semibold text-white bg-black rounded-lg hover:bg-blue-400"
+                    className="flex items-center justify-center py-1.5 text-lg font-semibold text-white bg-black rounded-lg hover:bg-blue-400"
                   >
                     Visit
                   </a>
+
+                  {contest.solutionLink ? (
+                    <a
+                      href={contest.solutionLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center w-full px-4 py-1.5 text-lg font-semibold text-white transition-all bg-green-600 rounded-lg hover:bg-green-700"
+                    >
+                      Solution
+                    </a>
+                  ) : (
+                    <span className="text-center text-gray-500">N/A</span>
+                  )}
 
                   {/* Unbookmark Button */}
                   <button onClick={() => toggleBookmark(contest._id)}>★</button>

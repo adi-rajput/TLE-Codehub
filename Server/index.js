@@ -9,7 +9,7 @@ const  fetchLeetCodeContests  = require('./controller/fetch_leetcode.js')
 const  {updateContestStatus}  = require('./controller/Contest_Controller.js')
 const userRouter = require('./routes/user_routes.js')
 const contestRouter = require('./routes/contest_routes.js')
-const {contestCron , contestStatusCron} = require('./utils/contest_cron.js')
+const {contestCron } = require('./utils/contest_cron.js')
 dotenv.config();
 
 
@@ -38,4 +38,4 @@ app.listen(PORT , () =>{
 })
 app.use('/user', userRouter)
 app.use('/contests', contestRouter)
-contestStatusCron();
+updateContestStatus();

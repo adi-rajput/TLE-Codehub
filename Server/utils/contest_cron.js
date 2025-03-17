@@ -19,4 +19,4 @@ const contestStatusCron = () => {
         }
     });
 };
-module.exports = { contestCron, contestStatusCron };
+module.exports = { contestCron , contestStatusCron };
