@@ -143,7 +143,7 @@ const getPastContests = async (req, res) => {
 };
 
 
-setInterval(updateContestStatus, 60 * 1000);
+setInterval(updateContestStatus, 60 * 5000);
 module.exports = {
     fetchContests,
     updateContestStatus,
