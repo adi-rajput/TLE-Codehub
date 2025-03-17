@@ -30,14 +30,33 @@ const ContestTracker = () => {
   // Fetch bookmarks from API
   const fetchBookmarks = async () => {
     try {
-      const response = await fetch("http://localhost:3000/user/bookmarks");
-      const data = await response.json();
-      // Store the array of bookmark IDs instead of objects for easier checking
-      setBookmarked(data.bookmarks?.map(bookmark => bookmark._id) || []);
+        const response = await fetch("http://localhost:3000/user/bookmarks", {
+            method: "GET",
+            credentials: "include", // Ensure cookies are sent with the request
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Fetched bookmarks data:", data);
+
+        if (Array.isArray(data.bookmarks)) {
+            setBookmarked(data.bookmarks.map(bookmark => bookmark._id));
+        } else {
+            console.error("Invalid bookmarks format:", data);
+            setBookmarked([]);
+        }
     } catch (error) {
-      console.error("Error fetching bookmarks:", error);
+        console.error("Error fetching bookmarks:", error);
+        setBookmarked([]);
     }
-  };
+};
+
 
   useEffect(() => {
     fetchContests();

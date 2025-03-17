@@ -18,9 +18,11 @@ const PastContests = () => {
       setLoading(true);
       try {
         // Fetch bookmarks first
-        const bookmarkResponse = await fetch("http://localhost:3000/user/bookmarks");
+        const bookmarkResponse = await fetch("http://localhost:3000/user/bookmarks", {
+          credentials: "include", // Ensure cookies are sent with the request
+        });
         const bookmarkData = await bookmarkResponse.json();
-        
+
         if (bookmarkResponse.ok && bookmarkData.bookmarks) {
           // Store just the IDs of bookmarked contests
           const bookmarkIds = bookmarkData.bookmarks.map(bookmark => bookmark._id);
