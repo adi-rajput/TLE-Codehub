@@ -12,20 +12,20 @@ const Navbar = () => {
       try {
         const response = await fetch("http://localhost:3000/user/me", {
           method: "GET",
-          credentials: "include", // ✅ Ensures cookies are sent
+          credentials: "include",
         });
 
         if (!response.ok) throw new Error("Unauthorized");
 
         const data = await response.json();
-        setUser(data); // ✅ Set user state if successful
+        setUser(data);
       } catch (err) {
         console.error("Failed to fetch user:", err.message);
-        setUser(null); // ✅ Clear user on error
+        setUser(null);
       }
     };
 
-    fetchUser(); // ✅ Call function on mount
+    fetchUser();
   }, []);
 
   const handleLogout = async () => {

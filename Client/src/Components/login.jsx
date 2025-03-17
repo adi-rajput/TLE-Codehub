@@ -18,23 +18,20 @@ const LoginCard = () => {
       const response = await fetch("http://localhost:3000/user/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // ✅ Allows sending cookies
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
   
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Login failed");
   
-      // ✅ Store user data in localStorage (without token for security)
       localStorage.setItem("user", JSON.stringify(data.user));
   
-      // ✅ Show success message
       toast.success("Login successful! Redirecting...", { autoClose: 2000 });
   
-      // ✅ Redirect to home after 2 seconds
       setTimeout(() => {
         navigate("/");
-        window.location.reload(); // Force navbar update
+        window.location.reload();
       }, 2000);
     } catch (err) {
       toast.error(err.message || "Something went wrong");
@@ -43,10 +40,8 @@ const LoginCard = () => {
     }
   };
   
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      {/* Toast Notifications */}
       <ToastContainer position="top-right" autoClose={2000} />
 
       <div className="w-[400px] p-8 bg-white shadow-lg rounded-lg">

@@ -25,13 +25,10 @@ const RegisterCard = () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Registration failed");
 
-      // Store user data in localStorage
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Show success toast
       toast.success("Registration successful! Logging in...", { autoClose: 2000 });
 
-      // Redirect to home after 2 seconds
       setTimeout(() => {
         navigate("/");
       }, 2000);
@@ -44,7 +41,6 @@ const RegisterCard = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      {/* Toast Notifications */}
       <ToastContainer position="top-right" autoClose={2000} />
 
       <div className="w-[400px] p-8 bg-white shadow-lg rounded-lg">
@@ -76,7 +72,6 @@ const RegisterCard = () => {
             required
           />
 
-          {/* Role Selection */}
           <div className="flex items-center gap-4">
             <label className="flex items-center gap-2">
               <input

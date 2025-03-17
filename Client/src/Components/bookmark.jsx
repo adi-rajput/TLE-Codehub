@@ -5,13 +5,10 @@ const BookmarkedContests = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const contestsPerPage = 50;
-
-  // Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPlatform, setSelectedPlatform] = useState("All");
   const [selectedDuration, setSelectedDuration] = useState("All");
 
-  // Fetch Bookmarked Contests
   useEffect(() => {
     const fetchBookmarkedContests = async () => {
       setLoading(true);
@@ -36,7 +33,6 @@ const BookmarkedContests = () => {
     fetchBookmarkedContests();
   }, []);
 
-  // Handle Unbookmarking
   const toggleBookmark = async (contestId) => {
     try {
       const response = await fetch(
@@ -63,7 +59,6 @@ const BookmarkedContests = () => {
     }
   };
 
-  // Apply Filters
   const filteredContests = bookmarkedContests.filter((contest) => {
     return (
       (selectedPlatform === "All" || contest.platform === selectedPlatform) &&
@@ -77,7 +72,6 @@ const BookmarkedContests = () => {
     );
   });
 
-  // Get current page contests
   const indexOfLastContest = currentPage * contestsPerPage;
   const indexOfFirstContest = indexOfLastContest - contestsPerPage;
   const currentContests = filteredContests.slice(
@@ -91,9 +85,7 @@ const BookmarkedContests = () => {
         Bookmarked Contests
       </h1>
 
-      {/* Filters */}
       <div className="flex flex-wrap gap-4 mx-auto mb-6 max-w-[95%]">
-        {/* Search */}
         <input
           type="text"
           placeholder="Search contests..."
@@ -102,7 +94,6 @@ const BookmarkedContests = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
 
-        {/* Platform Filter */}
         <select
           className="px-4 py-2 border rounded-lg shadow-sm"
           value={selectedPlatform}
@@ -114,7 +105,6 @@ const BookmarkedContests = () => {
           <option value="CodeChef">CodeChef</option>
         </select>
 
-        {/* Duration Filter */}
         <select
           className="px-4 py-2 border rounded-lg shadow-sm"
           value={selectedDuration}
@@ -133,7 +123,6 @@ const BookmarkedContests = () => {
         </p>
       ) : (
         <div className="max-w-[95%] mx-auto overflow-hidden bg-white rounded-lg shadow-md">
-          {/* Table Header */}
           <div className="grid grid-cols-[50px_2.5fr_0.9fr_1fr_1fr_120px_80px_100px_80px] gap-3 px-8 py-5 text-lg font-semibold text-white bg-gray-700">
             <span>#</span>
             <span>Contest</span>
@@ -144,10 +133,8 @@ const BookmarkedContests = () => {
             <span>Action</span>
             <span>Solution</span>
             <span>Bookmark</span>
-            
           </div>
 
-          {/* Bookmarked Contests List */}
           {currentContests.length > 0 ? (
             currentContests.map((contest, index) => {
               const startTime = new Date(contest.date);
@@ -166,12 +153,10 @@ const BookmarkedContests = () => {
                   key={index}
                   className="grid items-center grid-cols-[50px_2.5fr_1fr_1.2fr_1.1fr_120px_100px_100px_80px] gap-3 px-8 py-5 border-b border-gray-300 rounded-lg transition-all shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-[2px]"
                 >
-                  {/* Index */}
                   <span className="w-8 text-xl font-medium text-center text-gray-700">
                     {indexOfFirstContest + index + 1}
                   </span>
 
-                  {/* Contest Title */}
                   <a
                     href={contest.contest_link}
                     target="_blank"
@@ -195,17 +180,14 @@ const BookmarkedContests = () => {
                     {contest.platform}
                   </span>
 
-                  {/* Start Time */}
                   <span className="text-lg text-gray-600">
                     {startTime.toLocaleString()}
                   </span>
 
-                  {/* Duration */}
                   <span className="text-xl text-gray-600">
                     {contest.duration} min
                   </span>
 
-                  {/* Status */}
                   <span
                     className={`px-3 py-1 text-lg font-medium rounded-md text-center ${
                       status === "Upcoming"
@@ -218,7 +200,6 @@ const BookmarkedContests = () => {
                     {status}
                   </span>
 
-                  {/* Visit Button */}
                   <a
                     href={contest.contest_link}
                     target="_blank"
@@ -241,7 +222,6 @@ const BookmarkedContests = () => {
                     <span className="text-center text-gray-500">N/A</span>
                   )}
 
-                  {/* Unbookmark Button */}
                   <button onClick={() => toggleBookmark(contest._id)}>★</button>
                 </div>
               );
