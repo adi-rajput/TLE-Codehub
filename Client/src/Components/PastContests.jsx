@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-
+import AddSolutionButton from "./AddSolution";
 const PastContests = () => {
   const [contests, setContests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,6 +11,29 @@ const PastContests = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPlatform, setSelectedPlatform] = useState("All");
   const [selectedDuration, setSelectedDuration] = useState("All");
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/user/me", {
+          method: "GET",
+          credentials: "include", // ✅ Ensures cookies are sent
+        });
+
+        if (!response.ok) throw new Error("Unauthorized");
+
+        const data = await response.json();
+        console.log("Fetched user data:", data.user.role);
+        setUser(data.user);
+      } catch (err) {
+        console.error("Failed to fetch user:", err.message);
+        setUser(null);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   // Fetch both contests and bookmarks at component mount
   useEffect(() => {
@@ -18,14 +41,19 @@ const PastContests = () => {
       setLoading(true);
       try {
         // Fetch bookmarks first
-        const bookmarkResponse = await fetch("http://localhost:3000/user/bookmarks", {
-          credentials: "include", // Ensure cookies are sent with the request
-        });
+        const bookmarkResponse = await fetch(
+          "http://localhost:3000/user/bookmarks",
+          {
+            credentials: "include", // Ensure cookies are sent with the request
+          }
+        );
         const bookmarkData = await bookmarkResponse.json();
 
         if (bookmarkResponse.ok && bookmarkData.bookmarks) {
           // Store just the IDs of bookmarked contests
-          const bookmarkIds = bookmarkData.bookmarks.map(bookmark => bookmark._id);
+          const bookmarkIds = bookmarkData.bookmarks.map(
+            (bookmark) => bookmark._id
+          );
           setBookmarked(bookmarkIds);
         }
 
@@ -76,18 +104,21 @@ const PastContests = () => {
   // Handle bookmarking (calls API and updates local state)
   const toggleBookmark = async (contestId) => {
     try {
-      const response = await fetch(`http://localhost:3000/user/toggle-bookmark/${contestId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include" // Include cookies if using session-based auth
-      });
-      
+      const response = await fetch(
+        `http://localhost:3000/user/toggle-bookmark/${contestId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Include cookies if using session-based auth
+        }
+      );
+
       if (response.ok) {
         // Update local bookmark state immediately without refetching
         if (isBookmarked(contestId)) {
-          setBookmarked(bookmarked.filter(id => id !== contestId));
+          setBookmarked(bookmarked.filter((id) => id !== contestId));
         } else {
           setBookmarked([...bookmarked, contestId]);
         }
@@ -165,7 +196,9 @@ const PastContests = () => {
       </div>
 
       {loading ? (
-        <p className="text-lg text-center text-gray-600">Loading contests and bookmarks...</p>
+        <p className="text-lg text-center text-gray-600">
+          Loading contests and bookmarks...
+        </p>
       ) : (
         <div className="max-w-[95%] mx-auto overflow-hidden bg-white rounded-lg shadow-md">
           {/* Table Header */}
@@ -236,7 +269,7 @@ const PastContests = () => {
                 >
                   Visit
                 </a>
-                
+
                 {/* Solution Button */}
                 {contest.solutionLink ? (
                   <a
@@ -247,10 +280,12 @@ const PastContests = () => {
                   >
                     Solution
                   </a>
+                ) : user?.role?.toLowerCase() === "admin" ? ( // ✅ Directly use user.role
+                  <AddSolutionButton contest={contest} user={user} />
                 ) : (
                   <span className="text-center text-gray-500">N/A</span>
                 )}
-                
+
                 {/* Bookmark Button with yellow fill for bookmarked contests */}
                 <button
                   onClick={(e) => {
@@ -258,9 +293,15 @@ const PastContests = () => {
                     toggleBookmark(contest._id);
                   }}
                   className={`p-2 text-2xl rounded-md ${
-                    isBookmarked(contest._id) ? "text-yellow-500" : "text-gray-400"
+                    isBookmarked(contest._id)
+                      ? "text-yellow-500"
+                      : "text-gray-400"
                   } hover:scale-110 transition-transform`}
-                  aria-label={isBookmarked(contest._id) ? "Remove bookmark" : "Add bookmark"}
+                  aria-label={
+                    isBookmarked(contest._id)
+                      ? "Remove bookmark"
+                      : "Add bookmark"
+                  }
                 >
                   ★
                 </button>
