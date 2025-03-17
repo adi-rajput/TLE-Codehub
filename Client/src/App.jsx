@@ -3,7 +3,7 @@ import { useState } from "react";
 import Navbar from "./Components/navbar";
 import ContestTracker from "./Components/active-contests";
 import PastContests from "./Components/PastContests";
-// import Bookmarks from "./Components/Bookmarks";
+import BookmarkedContests from "./Components/bookmark";
 import Register from "./Components/Register";
 import Login from "./Components/login";
 
@@ -32,6 +32,10 @@ const App = () => {
         <Route
           path="/login"
           element={<Login onLogin={(data) => setUser(data)} />}
+        />
+        <Route
+          path="/bookmarks"
+          element={<BookmarkedContests user={user} />}
         />
       </Routes>
     </>

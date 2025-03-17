@@ -50,4 +50,18 @@ router.get("/me", verifyToken , async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+router.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true, // Use `true` in production (with HTTPS)
+    sameSite: "strict",
+    path: "/", // Ensure all cookies related to this domain are cleared
+  });
+
+  return res.status(200).json({ message: "Logged out successfully" });
+});
+
+module.exports = router;
+
 module.exports = router
