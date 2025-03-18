@@ -42,6 +42,7 @@ const updateContestStatus = async () => {
         );
         console.log(`Updated ${contest.title} to ${newStatus}`);
       }
+      console.log("Contest status updated successfully!");
     }
   } catch (error) {
     console.error("Error updating contest statuses:", error);
@@ -148,7 +149,7 @@ const getPastContests = async (req, res) => {
   }
 };
 
-setInterval(updateContestStatus, 60 * 5000);
+setInterval(updateContestStatus, 60 * 5000 );
 module.exports = {
   fetchContests,
   updateContestStatus,
