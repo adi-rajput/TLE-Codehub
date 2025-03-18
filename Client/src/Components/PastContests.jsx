@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import AddSolutionButton from "./AddSolution";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-//toast.configure();
+import { FiExternalLink } from "react-icons/fi";
+import { FaStar } from "react-icons/fa";
 
 const PastContests = () => {
   const [contests, setContests] = useState([]);
@@ -22,9 +23,7 @@ const PastContests = () => {
           method: "GET",
           credentials: "include",
         });
-
         if (!response.ok) throw new Error("Unauthorized");
-
         const data = await response.json();
         console.log("Fetched user data:", data.user.role);
         setUser(data.user);
@@ -33,7 +32,6 @@ const PastContests = () => {
         setUser(null);
       }
     };
-
     fetchUser();
   }, []);
 
@@ -48,7 +46,6 @@ const PastContests = () => {
           }
         );
         const bookmarkData = await bookmarkResponse.json();
-
         if (bookmarkResponse.ok && bookmarkData.bookmarks) {
           const bookmarkIds = bookmarkData.bookmarks.map(
             (bookmark) => bookmark._id
@@ -145,23 +142,41 @@ const PastContests = () => {
     indexOfLastContest
   );
 
+  const getPlatformStyles = (platform) => {
+    switch (platform) {
+      case "LeetCode":
+        return "bg-gradient-to-r from-yellow-500 to-yellow-400 text-gray-900 shadow-yellow-300/50";
+      case "Codeforces":
+        return "bg-gradient-to-r from-orange-500 to-orange-400 text-white shadow-purple-300/50";
+      case "CodeChef":
+        return "bg-gradient-to-r from-purple-500 to-purple-400 text-white shadow-orange-300/50";
+      case "AtCoder":
+        return "bg-gradient-to-r from-blue-500 to-blue-400 text-white shadow-blue-300/50";
+      default:
+        return "bg-gradient-to-r from-gray-500 to-gray-400 text-white shadow-gray-300/50";
+    }
+  };
+
   return (
-    <div className="min-h-screen p-6 text-gray-800 bg-gray-100">
-      <h1 className="mb-6 text-4xl font-bold text-center text-black">
+    <div className="min-h-screen p-6 text-gray-800 bg-gradient-to-br from-gray-50 to-gray-100">
+      <h1 className="mb-8 text-5xl font-bold text-center text-transparent mt-18 bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-700">
         Past Contests
       </h1>
 
-      <div className="flex flex-wrap gap-4 mx-auto mb-6 max-w-[95%]">
-        <input
-          type="text"
-          placeholder="Search contests..."
-          className="px-4 py-2 border rounded-lg shadow-sm"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+      <div className="flex flex-wrap justify-center gap-4 mx-auto mb-8 max-w-[95%]">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search contests..."
+            className="w-64 px-4 py-3 pl-10 text-lg transition-all border-0 shadow-lg rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <span className="absolute left-3 top-3.5 text-gray-400">🔍</span>
+        </div>
 
         <select
-          className="px-4 py-2 border rounded-lg shadow-sm"
+          className="px-4 py-3 text-lg transition-all bg-white border-0 shadow-lg rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
           value={selectedPlatform}
           onChange={(e) => setSelectedPlatform(e.target.value)}
         >
@@ -169,10 +184,11 @@ const PastContests = () => {
           <option value="LeetCode">LeetCode</option>
           <option value="Codeforces">Codeforces</option>
           <option value="CodeChef">CodeChef</option>
+          <option value="AtCoder">AtCoder</option>
         </select>
 
         <select
-          className="px-4 py-2 border rounded-lg shadow-sm"
+          className="px-4 py-3 text-lg transition-all bg-white border-0 shadow-lg rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
           value={selectedDuration}
           onChange={(e) => setSelectedDuration(e.target.value)}
         >
@@ -184,127 +200,211 @@ const PastContests = () => {
       </div>
 
       {loading ? (
-        <p className="text-lg text-center text-gray-600">
-          Loading contests and bookmarks...
-        </p>
+        <div className="flex flex-col items-center justify-center p-16">
+          <div className="w-20 h-20 border-t-4 border-b-4 border-blue-500 rounded-full animate-spin"></div>
+          <p className="mt-6 text-2xl font-medium text-gray-600">
+            Loading contests and bookmarks...
+          </p>
+        </div>
       ) : (
-        <div className="max-w-[95%] mx-auto overflow-hidden bg-white rounded-lg shadow-md">
-          <div className="grid grid-cols-[50px_2.5fr_1fr_1.3fr_1fr_100px_100px_80px] gap-3 px-8 py-5 text-lg font-semibold text-white bg-gray-700">
-            <span>#</span>
-            <span>Contest</span>
-            <span>Platform</span>
-            <span>Start Time</span>
-            <span>Duration</span>
-            <span>Action</span>
-            <span>Solution</span>
-            <span>Bookmark</span>
+        <div className="max-w-[98%] mx-auto overflow-hidden bg-white rounded-3xl shadow-2xl border border-gray-100">
+          {/* Header with animated gradient background */}
+          <div className="hidden md:grid grid-cols-[70px_2.7fr_1fr_1.3fr_1fr_130px_110px_80px] gap-4 px-8 py-5 text-lg font-medium text-gray-100 bg-gradient-to-r from-gray-800 to-gray-700">
+            <span className="flex items-center">#</span>
+            <span className="flex items-center">Contest</span>
+            <span className="flex items-center">Platform</span>
+            <span className="flex items-center">Start Time</span>
+            <span className="flex items-center">Duration</span>
+            <span className="flex items-center">Action</span>
+            <span className="flex items-center">Solution</span>
+            <span className="flex items-center">Bookmark</span>
           </div>
 
+          {/* Contest listing with hover effects */}
           {currentContests.length > 0 ? (
             currentContests.map((contest, index) => (
               <div
                 key={index}
-                className="grid items-center grid-cols-[50px_2.5fr_1fr_1.3fr_1fr_100px_100px_80px] gap-3 px-8 py-5 border-b border-gray-300 rounded-lg transition-all shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-[2px]"
+                className="grid items-center grid-cols-[70px_2.5fr_1fr_1.3fr_1.17fr_130px_130px_80px] gap-3 px-8 py-6 border-b border-gray-200 transition-all hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 hover:shadow-md"
               >
-                <span className="w-8 text-xl font-medium text-center text-gray-700">
+                <span className="items-center justify-center hidden w-8 h-8 text-lg font-medium text-white transition-colors bg-gray-700 rounded-full md:flex group-hover:bg-blue-600">
                   {indexOfFirstContest + index + 1}
                 </span>
 
-                <a
-                  href={contest.contest_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xl font-semibold text-black hover:underline"
-                >
-                  {contest.title}
-                </a>
+                <div>
+                  <a
+                    href={contest.contest_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xl font-bold text-gray-800 transition-colors hover:text-blue-600"
+                  >
+                    {contest.title}
+                  </a>
+                </div>
 
-                <span
-                  className={`px-2 py-1 w-28 text-center text-lg font-medium rounded-md ${
-                    contest.platform === "LeetCode"
-                      ? "bg-yellow-200"
-                      : contest.platform === "Codeforces"
-                      ? "bg-purple-200"
-                      : contest.platform === "CodeChef"
-                      ? "bg-orange-200"
-                      : "bg-gray-50"
-                  }`}
-                >
-                  {contest.platform}
-                </span>
+                <div className="items-center justify-start md:flex">
+                  <span
+                    className={`px-4 py-1.5 text-center text-lg font-medium rounded-full shadow-md ${getPlatformStyles(
+                      contest.platform
+                    )}`}
+                  >
+                    {contest.platform}
+                  </span>
+                </div>
 
-                <span className="text-lg text-gray-600">
+                <span className="flex items-center text-lg text-gray-700">
+                  <svg
+                    className="w-5 h-5 mr-2 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
                   {new Date(contest.date).toLocaleString()}
                 </span>
 
-                <span className="text-xl text-gray-600">
+                <span className="flex items-center text-xl text-gray-700">
+                  <svg
+                    className="w-5 h-5 mr-2 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
                   {contest.duration} min
                 </span>
 
-                <a
-                  href={contest.contest_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center py-1.5 text-lg font-semibold text-center text-white transition-all bg-black rounded-lg hover:bg-blue-400"
-                >
-                  Visit
-                </a>
+                <div className="items-center md:flex">
+                  <a
+                    href={contest.contest_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center px-5 py-2 text-base font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-full shadow-md hover:shadow-blue-200/50 hover:-translate-y-0.5 transition-all"
+                  >
+                    <FiExternalLink className="mr-1.5" /> Visit
+                  </a>
+                </div>
 
                 {contest.solutionLink ? (
                   <a
                     href={contest.solutionLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center w-full px-4 py-1.5 text-lg font-semibold text-white transition-all bg-green-600 rounded-lg hover:bg-green-700"
+                    className="flex items-center justify-center w-full h-12 px-4 text-lg font-semibold text-white transition-all duration-300 transform rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 hover:shadow-xl hover:shadow-green-200/40 hover:scale-105 group"
                   >
+                    <svg 
+                      className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24" 
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth="2" 
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                      />
+                    </svg>
                     Solution
                   </a>
                 ) : user?.role?.toLowerCase() === "admin" ? (
-                  <AddSolutionButton contest={contest} user={user} />
+                  <div className="w-full h-12">
+                    <AddSolutionButton contest={contest} user={user} />
+                  </div>
                 ) : (
-                  <span className="text-center text-gray-500">N/A</span>
+                  <div className="flex items-center justify-center w-full h-12 px-4 text-lg font-medium text-gray-400 transition-all duration-200 cursor-default rounded-xl bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 group">
+                    <svg 
+                      className="w-5 h-5 mr-2 text-gray-400 opacity-70" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24" 
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth="2" 
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                      />
+                    </svg>
+                    No Solution
+                  </div>
                 )}
 
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleBookmark(contest._id);
-                  }}
-                  className={`p-2 text-2xl rounded-md ${
-                    isBookmarked(contest._id)
-                      ? "text-yellow-500"
-                      : "text-gray-400"
-                  } hover:scale-110 transition-transform cursor-pointer`}
-                  aria-label={
-                    isBookmarked(contest._id)
-                      ? "Remove bookmark"
-                      : "Add bookmark"
-                  }
-                >
-                  ★
-                </button>
+                <div className="items-center justify-center md:flex">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleBookmark(contest._id);
+                    }}
+                    className={`p-2 text-2xl rounded-full transition-all duration-300 hover:scale-110 ${
+                      isBookmarked(contest._id)
+                        ? "text-yellow-500 bg-yellow-50"
+                        : "text-gray-400 hover:text-yellow-400 hover:bg-yellow-50"
+                    }`}
+                    aria-label={
+                      isBookmarked(contest._id)
+                        ? "Remove from bookmarks"
+                        : "Add to bookmarks"
+                    }
+                  >
+                    <FaStar
+                      className={
+                        isBookmarked(contest._id) ? "drop-shadow-md" : ""
+                      }
+                    />
+                  </button>
+                </div>
               </div>
             ))
           ) : (
-            <p className="p-6 text-lg text-center text-gray-600">
-              No past contests found.
-            </p>
+            <div className="flex flex-col items-center justify-center p-16">
+              <span className="text-7xl">🔍</span>
+              <p className="mt-6 text-2xl text-center text-gray-600">
+                No contests found matching your criteria.
+              </p>
+              <button 
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedPlatform("All");
+                  setSelectedDuration("All");
+                }}
+                className="px-6 py-3 mt-6 text-lg font-semibold text-white transition-all transform shadow-lg bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl hover:from-blue-500 hover:to-blue-700 hover:scale-105"
+              >
+                Reset Filters
+              </button>
+            </div>
           )}
         </div>
       )}
 
-      <div className="flex justify-center gap-4 mt-6">
+      <div className="flex justify-center gap-6 mt-8">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
-          className="px-5 py-2 font-medium text-white bg-gray-700 rounded-lg disabled:opacity-50 hover:bg-gray-800"
+          className="px-6 py-3 text-lg font-medium text-white transition-all shadow-lg bg-gradient-to-r from-gray-700 to-gray-800 rounded-xl disabled:opacity-50 hover:from-gray-600 hover:to-gray-700"
         >
           Previous
         </button>
 
-        <span className="text-lg font-semibold">
+        <span className="flex items-center px-4 py-2 text-lg font-semibold text-gray-800 bg-white rounded-lg shadow">
           {filteredContests.length === 0
-            ? "Loading..." 
+            ? "Loading..."
             : `Page ${currentPage} of ${Math.ceil(
                 filteredContests.length / contestsPerPage
               )}`}
@@ -321,7 +421,7 @@ const PastContests = () => {
           disabled={
             currentPage >= Math.ceil(filteredContests.length / contestsPerPage)
           }
-          className="px-5 py-2 font-medium text-white bg-gray-700 rounded-lg disabled:opacity-50 hover:bg-gray-800"
+          className="px-6 py-3 text-lg font-medium text-white transition-all shadow-lg bg-gradient-to-r from-gray-700 to-gray-800 rounded-xl disabled:opacity-50 hover:from-gray-600 hover:to-gray-700"
         >
           Next
         </button>
