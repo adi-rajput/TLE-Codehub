@@ -23,7 +23,7 @@ Contest Hub is a web application designed to help competitive programmers track 
 ## Application Screenshots
 
 ### Contest Tracker (Home)
-![Contest Tracker Home](screenshots/contest-tracker.png)
+![Contest Tracker Home](Assets/Screenshot%202025-03-19%20024902.png)
 The main page displays upcoming contests with filtering options by platform (LeetCode, Codeforces, CodeChef).
 Each contest shows:
 - Contest name and number
@@ -34,7 +34,7 @@ Each contest shows:
 - Action buttons (Visit, Bookmark)
 
 ### Past Contests
-![Past Contests](screenshots/past-contests.png)
+![Past Contests](Assets/Screenshot%202025-03-19%20024912.png)
 Displays completed contests with options to:
 - Search contests
 - Filter by platform and duration
@@ -45,7 +45,7 @@ Displays completed contests with options to:
 - Bookmark contests
 
 ### Bookmarks
-![Bookmarks](screenshots/bookmarks.png)
+![Bookmarks](Assets/Screenshot%202025-03-19%20024925.png)
 Shows all contests bookmarked by the user with:
 - Contest details in card format
 - Platform and status indicators
@@ -53,7 +53,7 @@ Shows all contests bookmarked by the user with:
 - Visit and solution availability information
 
 ### Solution Management
-![Add Solution](screenshots/add-solution.png)
+![Add Solution](Assets/Screenshot%202025-03-19%20025154.png)
 Admins can add video solutions to past contests:
 - Modal interface for selecting and previewing YouTube videos
 - Embedded video player for previewing content
